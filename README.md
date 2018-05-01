@@ -8,33 +8,59 @@ NVIDIA CUDA to be able to run on GPU
 OpenCV (Will use computation on GPU, to be continued)
 
 Installation tools eample on Linux.
+
 https://developer.nvidia.com/cuda-toolkit (For NVIDIA GPU board)
+
 Setting up OpenCV with Cmake GUI
+
 https://cmake.org/
+
 https://github.com/opencv/opencv
+
 do ../yourdownloadOpenCVfolder
+
 $mkdir build
+
 start CMake GUI program
+
 click and set path with 
+
 Brows source ../yourdownloadOpenCVfolder/opencv-master
+
 Brows build ../yourdownloadOpenCVfolder/build
+
 set checkbox
+
 WITH_CUDA=1
+
 and other settings you want..
+
 click Configre 2 times so the window turn white
+
 click Generate
+
 go to terminal ../yourdownloadOpenCVfolder/build
+
 $sudo make
+
 wait loooong time (several houers) for compilation
+
 Then important to load /usr/local
+
 with the new stuff do in ../yourdownloadOpenCVfolder/build
+
 $sudo make install
+
 $sudo ldconfig
 
 To do the application do
+
 Compile:
+
 $make
+
 Run:
+
 $./OW_CNN_R
 
 
