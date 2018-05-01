@@ -45,8 +45,8 @@ $sudo make
 
 wait loooong time (several houers) for compilation
 
-Then important to load /usr/local
-
+Then important to load 
+/usr/local 
 with the new stuff do in ../yourdownloadOpenCVfolder/build
 
 $sudo make install
