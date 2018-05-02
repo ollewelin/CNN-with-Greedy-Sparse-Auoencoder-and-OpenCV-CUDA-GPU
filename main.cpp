@@ -1,9 +1,13 @@
-#include <opencv2/opencv_modules.hpp>
+//#include <opencv2/opencv_modules.hpp>
 #include <opencv2/highgui/highgui.hpp>  // OpenCV window I/O
 #include <opencv2/imgproc/imgproc.hpp> // Gaussian Blur
 #include <stdio.h>
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
+//#include <opencv2/opencv.hpp>
+//#include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
+#include <opencv2/core.hpp>
+//#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudaarithm.hpp>
+
 //#include <cstdlib>
 //#include <ctime>
 #include <math.h>  // exp
@@ -153,7 +157,6 @@ int main()
     char answer_character;
     answer_character = getchar();
 
-    GpuMat test_gpu_mat;///Not yet used
 
     cv::Mat input_jpg_BGR;
     cv::Mat input_jpg_FC3;
@@ -170,6 +173,67 @@ int main()
         input_jpg_BGR = cv::imread("input.JPG", 1);
         input_jpg_BGR.convertTo(input_jpg_FC3, CV_32FC3, 1.0f/255.0f);
     }
+
+
+///Test GPU things
+    cv::cuda::GpuMat test_gpu_mat;///Not yet used
+    cv::cuda::GpuMat gpu_roi_part;
+    cv::cuda::GpuMat gpu_roi_part_B;
+    cv::cuda::GpuMat gpu_roi_part_C;
+ //   cv::Mat test1;
+    test_gpu_mat.create(input_jpg_FC3.rows,input_jpg_FC3.cols,CV_32FC3);
+    gpu_roi_part.create(8,8,CV_32FC3);
+    gpu_roi_part_B.create(8,8,CV_32FC3);
+    gpu_roi_part_C.create(8,8,CV_32FC3);
+ //   test1.create(8,8,CV_32FC1);
+ //   gpu_roi_part.create(8,8,CV_32FC1);
+ //   gpu_roi_part_B.create(8,8,CV_32FC1);
+ //   gpu_roi_part_C.create(8,8,CV_32FC1);
+
+    cv::Mat part_of_inputJPG;
+    part_of_inputJPG.create(8,8,CV_32FC3);
+
+    ///src(Rect(left,top,width, height)).copyTo(dst);
+    input_jpg_FC3(Rect(18,10,8,8)).copyTo(part_of_inputJPG);///No effect will be overwritten by gpu_roi_part.download(part_of_inputJPG);
+
+    test_gpu_mat.upload(input_jpg_FC3);///Data to GPU "device"
+    //gpu_roi_part.upload(test1);
+    test_gpu_mat(Rect(10,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+    test_gpu_mat(Rect(20,26,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+
+  ///input.JPG test was 50x50
+    test_gpu_mat(Rect(40,40,8,8)).copyTo(gpu_roi_part_C);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+
+///==========================================================
+///OpenCV documentation regaring   gpu::multiply
+///C++: void gpu::multiply(const GpuMat& a, const GpuMat& b, GpuMat& c, double scale=1, int dtype=-1, Stream& stream=Stream::Null() )
+///C++: void gpu::multiply(const GpuMat& a, const Scalar& sc, GpuMat& c, double scale=1, int dtype=-1, Stream& stream=Stream::Null() )¶
+///Parameters:
+///    a – First source matrix.
+///    b – Second source matrix to be multiplied by a elements.
+///    sc – A scalar to be multiplied by a elements.
+///    c – Destination matrix that has the same size and number of channels as the input array(s). The depth is defined by dtype or a depth.
+///    scale – Optional scale factor.
+///    dtype – Optional depth of the output array.
+///    stream – Stream for the asynchronous version.
+///==========================================================
+//    multiply(gpu_roi_part, 0.5, gpu_roi_part_C);
+//cv::cuda::multiply(())
+//    cv::cuda::multiply(gpu_roi_part,gpu_roi_part,gpu_roi_part);
+    cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, 0.75);
+
+//cv::cuda::gemm(gpu_roi_part,gpu_roi_part_B,1.0,gpu_roi_part_C,0.0,gpu_roi_part_C);
+
+
+    gpu_roi_part_C.download(part_of_inputJPG);///Data back to CPU "host"
+    test_gpu_mat.download(input_jpg_FC3);///Data back to CPU "host"
+
+    imshow("input_jpg_FC3", input_jpg_FC3);
+    imshow("part_of_inputJPG", part_of_inputJPG);
+    waitKey(10000);
+///End GPU test
+
+
     if(GUI_parameter7_int < 1)
     {
         print_pause_ms = 1;
