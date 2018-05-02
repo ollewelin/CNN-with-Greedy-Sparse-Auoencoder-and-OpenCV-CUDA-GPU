@@ -33,6 +33,8 @@ set checkbox
 
 WITH_CUDA=1
 
+WITH_QT=1
+
 and other settings you want..
 
 click Configre 2 times so the window turn white
