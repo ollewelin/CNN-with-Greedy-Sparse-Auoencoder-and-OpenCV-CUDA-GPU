@@ -172,7 +172,11 @@ int main()
         printf("input.JPG\n");
         input_jpg_BGR = cv::imread("input.JPG", 1);
         input_jpg_BGR.convertTo(input_jpg_FC3, CV_32FC3, 1.0f/255.0f);
-    }
+
+int GPU_TEST = 1;
+printf("GPU_TEST = %d\n", GPU_TEST);
+    if(GPU_TEST == 1 && input_jpg_FC3.cols > 49 && input_jpg_FC3.rows > 49)
+    {
 
 
 ///Test GPU things
@@ -180,16 +184,10 @@ int main()
     cv::cuda::GpuMat gpu_roi_part;
     cv::cuda::GpuMat gpu_roi_part_B;
     cv::cuda::GpuMat gpu_roi_part_C;
- //   cv::Mat test1;
     test_gpu_mat.create(input_jpg_FC3.rows,input_jpg_FC3.cols,CV_32FC3);
     gpu_roi_part.create(8,8,CV_32FC3);
     gpu_roi_part_B.create(8,8,CV_32FC3);
     gpu_roi_part_C.create(8,8,CV_32FC3);
- //   test1.create(8,8,CV_32FC1);
- //   gpu_roi_part.create(8,8,CV_32FC1);
- //   gpu_roi_part_B.create(8,8,CV_32FC1);
- //   gpu_roi_part_C.create(8,8,CV_32FC1);
-
     cv::Mat part_of_inputJPG;
     part_of_inputJPG.create(8,8,CV_32FC3);
 
@@ -197,7 +195,6 @@ int main()
     input_jpg_FC3(Rect(18,10,8,8)).copyTo(part_of_inputJPG);///No effect will be overwritten by gpu_roi_part.download(part_of_inputJPG);
 
     test_gpu_mat.upload(input_jpg_FC3);///Data to GPU "device"
-    //gpu_roi_part.upload(test1);
     test_gpu_mat(Rect(10,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
     test_gpu_mat(Rect(20,26,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
 
@@ -217,21 +214,17 @@ int main()
 ///    dtype – Optional depth of the output array.
 ///    stream – Stream for the asynchronous version.
 ///==========================================================
-//    multiply(gpu_roi_part, 0.5, gpu_roi_part_C);
-//cv::cuda::multiply(())
-//    cv::cuda::multiply(gpu_roi_part,gpu_roi_part,gpu_roi_part);
     cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, 0.75);
-
-//cv::cuda::gemm(gpu_roi_part,gpu_roi_part_B,1.0,gpu_roi_part_C,0.0,gpu_roi_part_C);
-
 
     gpu_roi_part_C.download(part_of_inputJPG);///Data back to CPU "host"
     test_gpu_mat.download(input_jpg_FC3);///Data back to CPU "host"
 
     imshow("input_jpg_FC3", input_jpg_FC3);
     imshow("part_of_inputJPG", part_of_inputJPG);
-    waitKey(10000);
+    waitKey(1000);
 ///End GPU test
+    }
+    }
 
 
     if(GUI_parameter7_int < 1)
