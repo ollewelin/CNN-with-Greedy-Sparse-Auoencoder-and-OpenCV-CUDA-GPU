@@ -23,13 +23,13 @@ using namespace cv::cuda;
 ///*************** (GUI) Graphic User Interface **************************
 ///************************************************************************
 int GUI_parameter1_int = 1;///layer_nr
-int GUI_parameter2_int = 2;///learning_gain
-int GUI_parameter3_int = 100;
+int GUI_parameter2_int = 4;///learning_gain
+int GUI_parameter3_int = 90;
 int GUI_parameter4_int = 0;///Nois
 int GUI_parameter5_int = 25;
 int GUI_parameter6_int = 100;
 int GUI_parameter7_int = 3000;
-int GUI_parameter8_int = 7;
+int GUI_parameter8_int = 10;
 int save_push = 0;
 int load_push = 0;
 int print_score = 0;
@@ -193,13 +193,15 @@ printf("GPU_TEST = %d\n", GPU_TEST);
 
     ///src(Rect(left,top,width, height)).copyTo(dst);
     input_jpg_FC3(Rect(18,10,8,8)).copyTo(part_of_inputJPG);///No effect will be overwritten by gpu_roi_part.download(part_of_inputJPG);
+//for(int h=0;h<)
+for(int i=0;i<10;i++)
+{
 
     test_gpu_mat.upload(input_jpg_FC3);///Data to GPU "device"
-    test_gpu_mat(Rect(10,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
-    test_gpu_mat(Rect(20,26,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
-
+    test_gpu_mat(Rect(5+i,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+    test_gpu_mat(Rect(7+i,26+i,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
   ///input.JPG test was 50x50
-    test_gpu_mat(Rect(40,40,8,8)).copyTo(gpu_roi_part_C);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+    test_gpu_mat(Rect(10+i,40,8,8)).copyTo(gpu_roi_part_C);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
 
 ///==========================================================
 ///OpenCV documentation regaring   gpu::multiply
@@ -214,7 +216,8 @@ printf("GPU_TEST = %d\n", GPU_TEST);
 ///    dtype – Optional depth of the output array.
 ///    stream – Stream for the asynchronous version.
 ///==========================================================
-    cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, 0.75);
+    float scaler = (float) i/10;
+    cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, scaler);
 
     gpu_roi_part_C.download(part_of_inputJPG);///Data back to CPU "host"
     test_gpu_mat.download(input_jpg_FC3);///Data back to CPU "host"
@@ -222,10 +225,12 @@ printf("GPU_TEST = %d\n", GPU_TEST);
     imshow("input_jpg_FC3", input_jpg_FC3);
     imshow("part_of_inputJPG", part_of_inputJPG);
     waitKey(1000);
+}
 ///End GPU test
     }
     }
 
+printf("debug\n");
 
     if(GUI_parameter7_int < 1)
     {
