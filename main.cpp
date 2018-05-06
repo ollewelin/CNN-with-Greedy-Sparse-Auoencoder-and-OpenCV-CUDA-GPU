@@ -171,36 +171,36 @@ int main()
         printf("input.JPG\n");
         input_jpg_BGR = cv::imread("input.JPG", 1);
         input_jpg_BGR.convertTo(input_jpg_FC3, CV_32FC3, 1.0f/255.0f);
-
-int GPU_TEST = 1;
-printf("GPU_TEST = %d\n", GPU_TEST);
-    if(GPU_TEST == 1 && input_jpg_FC3.cols > 49 && input_jpg_FC3.rows > 49)
-    {
+        printf("Start a GPU test\n");
+        int GPU_TEST = 1;
+        printf("GPU_TEST = %d\n", GPU_TEST);
+        if(GPU_TEST == 1 && input_jpg_FC3.cols > 49 && input_jpg_FC3.rows > 49)
+        {
 
 
 ///Test GPU things
-    cv::cuda::GpuMat test_gpu_mat;///Not yet used
-    cv::cuda::GpuMat gpu_roi_part;
-    cv::cuda::GpuMat gpu_roi_part_B;
-    cv::cuda::GpuMat gpu_roi_part_C;
-    test_gpu_mat.create(input_jpg_FC3.rows,input_jpg_FC3.cols,CV_32FC3);
-    gpu_roi_part.create(8,8,CV_32FC3);
-    gpu_roi_part_B.create(8,8,CV_32FC3);
-    gpu_roi_part_C.create(8,8,CV_32FC3);
-    cv::Mat part_of_inputJPG;
-    part_of_inputJPG.create(8,8,CV_32FC3);
+            cv::cuda::GpuMat test_gpu_mat;///Not yet used
+            cv::cuda::GpuMat gpu_roi_part;
+            cv::cuda::GpuMat gpu_roi_part_B;
+            cv::cuda::GpuMat gpu_roi_part_C;
+            test_gpu_mat.create(input_jpg_FC3.rows,input_jpg_FC3.cols,CV_32FC3);
+            gpu_roi_part.create(8,8,CV_32FC3);
+            gpu_roi_part_B.create(8,8,CV_32FC3);
+            gpu_roi_part_C.create(8,8,CV_32FC3);
+            cv::Mat part_of_inputJPG;
+            part_of_inputJPG.create(8,8,CV_32FC3);
 
-    ///src(Rect(left,top,width, height)).copyTo(dst);
-    input_jpg_FC3(Rect(18,10,8,8)).copyTo(part_of_inputJPG);///No effect will be overwritten by gpu_roi_part.download(part_of_inputJPG);
+            ///src(Rect(left,top,width, height)).copyTo(dst);
+            input_jpg_FC3(Rect(18,10,8,8)).copyTo(part_of_inputJPG);///No effect will be overwritten by gpu_roi_part.download(part_of_inputJPG);
 //for(int h=0;h<)
-for(int i=0;i<10;i++)
-{
+            for(int i=0; i<10; i++)
+            {
 
-    test_gpu_mat.upload(input_jpg_FC3);///Data to GPU "device"
-    test_gpu_mat(Rect(5+i,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
-    test_gpu_mat(Rect(7+i,26+i,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
-  ///input.JPG test was 50x50
-    test_gpu_mat(Rect(10+i,40,8,8)).copyTo(gpu_roi_part_C);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+                test_gpu_mat.upload(input_jpg_FC3);///Data to GPU "device"
+                test_gpu_mat(Rect(5+i,10,8,8)).copyTo(gpu_roi_part);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+                test_gpu_mat(Rect(7+i,26+i,8,8)).copyTo(gpu_roi_part_B);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
+                ///input.JPG test was 50x50
+                test_gpu_mat(Rect(10+i,40,8,8)).copyTo(gpu_roi_part_C);///Inside NVIDIA Rect() a part of image in GPU to another GpuMat
 
 ///==========================================================
 ///OpenCV documentation regaring   gpu::multiply
@@ -215,21 +215,21 @@ for(int i=0;i<10;i++)
 ///    dtype – Optional depth of the output array.
 ///    stream – Stream for the asynchronous version.
 ///==========================================================
-    float scaler = (float) i/10;
-    cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, scaler);
+                float scaler = (float) i/10;
+                cv::cuda::multiply(gpu_roi_part,gpu_roi_part_B,gpu_roi_part_C, scaler);
 
-    gpu_roi_part_C.download(part_of_inputJPG);///Data back to CPU "host"
-    test_gpu_mat.download(input_jpg_FC3);///Data back to CPU "host"
+                gpu_roi_part_C.download(part_of_inputJPG);///Data back to CPU "host"
+                test_gpu_mat.download(input_jpg_FC3);///Data back to CPU "host"
 
-    imshow("input_jpg_FC3", input_jpg_FC3);
-    imshow("part_of_inputJPG", part_of_inputJPG);
-    waitKey(1000);
-}
+                imshow("input_jpg_FC3", input_jpg_FC3);
+                imshow("part_of_inputJPG", part_of_inputJPG);
+                waitKey(1000);
+            }
 ///End GPU test
-    }
+        }
+        printf("End GPU test\n");
     }
 
-printf("debug\n");
 
     if(GUI_parameter7_int < 1)
     {
@@ -402,8 +402,8 @@ printf("debug\n");
                 cnn_autoenc_layer1.visual_dict.convertTo(BGR_L1_dict, CV_8UC3, 255);
                 imshow("BGR",  BGR_L1_dict);
                 cv::imwrite("L1_dict.bmp", BGR_L1_dict);
-                cnn_autoenc_layer1.bias_in2hid.convertTo(BGR_L1_bias_in2hid, CV_8UC3, 255);
-                cnn_autoenc_layer1.bias_hid2out.convertTo(BGR_L1_bias_hid2out, CV_8UC3, 255);
+                cnn_autoenc_layer1.bias_in2hid.convertTo(BGR_L1_bias_in2hid, CV_8UC1, 255, 128);
+                cnn_autoenc_layer1.bias_hid2out.convertTo(BGR_L1_bias_hid2out, CV_8UC1, 255, 128);
                 cv::imwrite("L1_bias_in2hid.bmp", BGR_L1_bias_in2hid);
                 cv::imwrite("L1_bias_hid2out.bmp", BGR_L1_bias_hid2out);
                 save_push=0;
@@ -416,8 +416,8 @@ printf("debug\n");
                 cnn_autoenc_layer1.copy_visual_dict2dictionary();
                 BGR_L1_bias_in2hid = cv::imread("L1_bias_in2hid.bmp", 1);
                 BGR_L1_bias_hid2out = cv::imread("L1_bias_hid2out.bmp", 1);
-                BGR_L1_bias_in2hid.convertTo(cnn_autoenc_layer1.bias_in2hid, CV_32FC3, 1.0f/255.0);
-                BGR_L1_bias_hid2out.convertTo(cnn_autoenc_layer1.bias_hid2out, CV_32FC3, 1.0f/255.0);
+                BGR_L1_bias_in2hid.convertTo(cnn_autoenc_layer1.bias_in2hid, CV_32FC1, 1.0f/255.0, -0.5f);
+                BGR_L1_bias_hid2out.convertTo(cnn_autoenc_layer1.bias_hid2out, CV_32FC1, 1.0f/255.0, -0.5f);
                 load_push=0;
             }
             cnn_autoenc_layer1.denoising_percent   = GUI_parameter4_int;///0..100
