@@ -5,7 +5,6 @@
 //#include <opencv2/opencv.hpp>
 //#include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
 #include <opencv2/core.hpp>
-//#include <opencv2/cudaarithm.hpp>
 #include <opencv2/cudaarithm.hpp>
 
 //#include <cstdlib>
@@ -268,7 +267,6 @@ printf("debug\n");
     cnn_autoenc_layer1.show_encoder_on_conv_cube = 1;
     cnn_autoenc_layer1.use_salt_pepper_noise = 1;///Only depend in COLOR mode. 1 = black..white noise. 0 = all kinds of color noise
     cnn_autoenc_layer1.learning_rate = 0.0;
-    cnn_autoenc_layer1.momentum = 0.0;
     cnn_autoenc_layer1.residual_gain = 0.9;
     cnn_autoenc_layer1.init_in_from_outside = 0;///When init_in_from_outside = 1 then Lx_IN_data_cube is same poiner as the Lx_OUT_convolution_cube of the previous layer
     cnn_autoenc_layer1.color_mode          = 1;///color_mode = 1 is ONLY allowed to use at Layer 1
@@ -328,7 +326,6 @@ printf("debug\n");
     cnn_autoenc_layer2.use_greedy_enc_method = greedy_mode;///
     cnn_autoenc_layer2.print_greedy_reused_atom = 1;
     cnn_autoenc_layer2.learning_rate = 0.01;
-    cnn_autoenc_layer2.momentum = 0.0;
     cnn_autoenc_layer2.residual_gain = 0.1;
     cnn_autoenc_layer2.show_encoder_on_conv_cube = 1;
     cnn_autoenc_layer2.Lx_IN_data_cube = cnn_autoenc_layer1.Lx_OUT_convolution_cube;///Pointer are copy NOT copy the physical memory. Copy physical memory is not good solution here.
@@ -374,7 +371,7 @@ printf("debug\n");
 
     //    cnn_autoenc_layer2.train_encoder();
     cv::waitKey(1);
-    cv::Mat BGR_L1_dict;
+    cv::Mat BGR_L1_dict, BGR_L1_bias_in2hid, BGR_L1_bias_hid2out;
      while(1)
     {
         if(use_CIFAR == 1)
@@ -405,8 +402,10 @@ printf("debug\n");
                 cnn_autoenc_layer1.visual_dict.convertTo(BGR_L1_dict, CV_8UC3, 255);
                 imshow("BGR",  BGR_L1_dict);
                 cv::imwrite("L1_dict.bmp", BGR_L1_dict);
-               // cv::imwrite("L1_bias_in2hid.bin", cnn_autoenc_layer1.bias_in2hid);
-               // cv::imwrite("L1_bias_hid2out.bin", cnn_autoenc_layer1.bias_hid2out);
+                cnn_autoenc_layer1.bias_in2hid.convertTo(BGR_L1_bias_in2hid, CV_8UC3, 255);
+                cnn_autoenc_layer1.bias_hid2out.convertTo(BGR_L1_bias_hid2out, CV_8UC3, 255);
+                cv::imwrite("L1_bias_in2hid.bmp", BGR_L1_bias_in2hid);
+                cv::imwrite("L1_bias_hid2out.bmp", BGR_L1_bias_hid2out);
                 save_push=0;
             }
             if(load_push==1)
@@ -415,8 +414,10 @@ printf("debug\n");
                 BGR_L1_dict = cv::imread("L1_dict.bmp", 1);
                 BGR_L1_dict.convertTo(cnn_autoenc_layer1.visual_dict, CV_32FC3, 1.0f/255.0);
                 cnn_autoenc_layer1.copy_visual_dict2dictionary();
-            //    cnn_autoenc_layer1.bias_in2hid = cv::imread("L1_bias_in2hid.bin", 1);
-            //    cnn_autoenc_layer1.bias_hid2out = cv::imread("L1_bias_hid2out.bin", 1);
+                BGR_L1_bias_in2hid = cv::imread("L1_bias_in2hid.bmp", 1);
+                BGR_L1_bias_hid2out = cv::imread("L1_bias_hid2out.bmp", 1);
+                BGR_L1_bias_in2hid.convertTo(cnn_autoenc_layer1.bias_in2hid, CV_32FC3, 1.0f/255.0);
+                BGR_L1_bias_hid2out.convertTo(cnn_autoenc_layer1.bias_hid2out, CV_32FC3, 1.0f/255.0);
                 load_push=0;
             }
             cnn_autoenc_layer1.denoising_percent   = GUI_parameter4_int;///0..100
