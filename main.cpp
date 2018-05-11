@@ -24,7 +24,7 @@ using namespace cv::cuda;
 int GUI_parameter1_int = 1;///layer_nr
 int GUI_parameter2_int = 4;///learning_gain
 int GUI_parameter3_int = 90;
-int GUI_parameter4_int = 0;///Nois
+int GUI_parameter4_int = 0;///Noise
 int GUI_parameter5_int = 25;
 int GUI_parameter6_int = 100;
 int GUI_parameter7_int = 3000;
@@ -146,8 +146,6 @@ void create_GUI(void)
 int main()
 {
 	printf("GPU ON = %d\n", cv::cuda::getCudaEnabledDeviceCount());
-	printf("Have not yet start use GpuMat\n");
-	printf("To be continue with GPU cv::cuda\n");
 	printf("OpenCV version:\n");
 	std::cout << CV_VERSION << std::endl;
 
@@ -435,14 +433,14 @@ int main()
         case(2):
             if(save_push==1)
             {
-                cv::imwrite("L2_dict.bin", cnn_autoenc_layer2.dictionary);
+                cv::imwrite("L2_dict.bin", cnn_autoenc_layer2.mat_dictionary);
                 cv::imwrite("L2_bias_in2hid.bin", cnn_autoenc_layer2.bias_in2hid);
                 cv::imwrite("L2_bias_hid2out.bin", cnn_autoenc_layer2.bias_hid2out);
                 save_push=0;
             }
             if(load_push==1)
             {
-                cnn_autoenc_layer2.dictionary = cv::imread("L2_dict.bin", 1);
+                cnn_autoenc_layer2.mat_dictionary = cv::imread("L2_dict.bin", 1);
                 cnn_autoenc_layer2.bias_in2hid = cv::imread("L2_bias_in2hid.bin", 1);
                 cnn_autoenc_layer2.bias_hid2out = cv::imread("L12_bias_hid2out.bin", 1);
                 load_push=0;
