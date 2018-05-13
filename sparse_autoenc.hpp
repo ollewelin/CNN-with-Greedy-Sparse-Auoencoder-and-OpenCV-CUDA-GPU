@@ -930,7 +930,7 @@ void sparse_autoenc::train_encoder(void)
                 {
                     i = h;
                 }
-                index_ptr_Lx_OUT_conv = zero_ptr_Lx_OUT_conv + (i * Lx_OUT_widht * Lx_OUT_hight) + ((patch_row_offset/stride) * Lx_OUT_widht) + (patch_col_offset/stride);
+                index_ptr_Lx_OUT_conv = zero_ptr_Lx_OUT_conv + (i * Lx_OUT_widht * Lx_OUT_hight) + ((patch_row_offset) * Lx_OUT_widht) + (patch_col_offset);
                 *index_ptr_Lx_OUT_conv = train_hidden_node[i];
             }
         }

@@ -34,6 +34,8 @@ int load_push = 0;
 int print_score = 0;
 int greedy_mode = 1;
 int print_pause_ms = 1;
+
+int test_mode = 0;
 int autoenc_ON =1;/// 1 = Autoencoder. 0 = Convolution All layer.
 int H_MIN = 0;
 int H_MAX = 1000;
@@ -73,7 +75,10 @@ void callbackButton5(int state, void *pointer)
 }
 void callbackButton6(int state, void *pointer)
 {
+    test_mode = state;
+    printf("test_mode =%d\n", test_mode);
     printf("button6 pressed\n");
+
 }
 void callbackButton7(int state, void *pointer)
 {
@@ -123,7 +128,7 @@ void create_GUI(void)
     cv::createButton(nameb3,callbackButton3,NULL,QT_PUSH_BUTTON,2);
     cv::createButton(nameb4,callbackButton4,NULL,QT_CHECKBOX,0);///Print
     cv::createButton(nameb5,callbackButton5,NULL,QT_CHECKBOX,1);///Greedy
-    cv::createButton(nameb6,callbackButton6,NULL,QT_PUSH_BUTTON,0);
+    cv::createButton(nameb6,callbackButton6,NULL,QT_CHECKBOX,0);
     cv::createButton(nameb7,callbackButton7,NULL,QT_PUSH_BUTTON,0);
 
     cv::createTrackbar("Layer numb", GUI_WindowName, &GUI_parameter1_int, layer_MAX, action_GUI);
@@ -394,6 +399,7 @@ int main()
             {
                 cnn_autoenc_layer1.show_encoder_on_conv_cube = 1;///
             }
+            cnn_autoenc_layer1.test_mode = test_mode;
             if(save_push==1)
             {
                 cnn_autoenc_layer1.copy_dictionary2visual_dict();
@@ -431,6 +437,7 @@ int main()
             }
             break;
         case(2):
+            cnn_autoenc_layer2.test_mode = test_mode;
             if(save_push==1)
             {
                 cv::imwrite("L2_dict.bin", cnn_autoenc_layer2.mat_dictionary);
@@ -480,10 +487,10 @@ int main()
             cnn_autoenc_layer1.random_change_ReLU_leak_variable();
             cnn_autoenc_layer1.copy_dictionary2visual_dict();
             cnn_autoenc_layer1.train_encoder();
-            imshow("L1 rec", cnn_autoenc_layer1.reconstruct);
+            imshow("L1 rec", cnn_autoenc_layer1.mat_reconstruct);
             imshow("L1 enc_input", cnn_autoenc_layer1.encoder_input);
             imshow("L1 enc_error", cnn_autoenc_layer1.enc_error);
-            imshow("L1 noise resid", cnn_autoenc_layer1.denoised_residual_enc_input);
+            imshow("L1 noise resid", cnn_autoenc_layer1.mat_denoised_residual_enc_input);
             imshow("L1 bias hid2out", cnn_autoenc_layer1.visual_b_hid2out);
             cv::imshow("Visual_dict_L1", cnn_autoenc_layer1.visual_dict);
             break;
@@ -506,10 +513,10 @@ int main()
             cnn_autoenc_layer2.residual_gain = ((float) GUI_parameter3_int) * 0.01f;
             cnn_autoenc_layer2.copy_dictionary2visual_dict();
             cnn_autoenc_layer2.train_encoder();
-            imshow("L2 rec", cnn_autoenc_layer2.reconstruct);
+            imshow("L2 rec", cnn_autoenc_layer2.mat_reconstruct);
             imshow("L2 enc_input", cnn_autoenc_layer2.encoder_input);
             imshow("L2 enc_error", cnn_autoenc_layer2.enc_error);
-            imshow("L2 noise resid", cnn_autoenc_layer2.denoised_residual_enc_input);
+            imshow("L2 noise resid", cnn_autoenc_layer2.mat_denoised_residual_enc_input);
             imshow("L2 bias hid2out", cnn_autoenc_layer2.visual_b_hid2out);
             cv::imshow("Visual_dict_L2", cnn_autoenc_layer2.visual_dict);
             break;
@@ -517,7 +524,7 @@ int main()
 
 
      //   cv::waitKey(1);
-     //  imshow("L1 rec", cnn_autoenc_layer1.reconstruct);
+     //  imshow("L1 rec", cnn_autoenc_layer1.mat_reconstruct);
 cv::waitKey(1);
     }
 
